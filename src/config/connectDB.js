@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 
 // Option 3: Passing parameters separately (other dialects)
-const sequelize = new Sequelize('expresstraining', 'root', null, {
+const sequelize = new Sequelize('animebackend', 'root', null, {
     host: 'localhost',
     dialect: 'mysql',
     logging: false,
