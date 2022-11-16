@@ -106,6 +106,7 @@ let getAllFilm = (page, size) => {
                 ],
                 limit,
                 offset,
+                distinct: true,
                 raw: false,
                 nest: true,
             })

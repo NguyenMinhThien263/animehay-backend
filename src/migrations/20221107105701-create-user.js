@@ -9,29 +9,20 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      firstName: {
-        type: Sequelize.STRING
-      },
-      lastName: {
+      userName: {
         type: Sequelize.STRING
       },
       email: {
         type: Sequelize.STRING
       },
-      image: {
-        type: Sequelize.BLOB('long')
-      },
-      address: {
-        type: Sequelize.TEXT
-      },
       password: {
         type: Sequelize.STRING
       },
-      userName: {
-        type: Sequelize.STRING
+      image: {
+        type: Sequelize.BLOB('long')
       },
       roleId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
