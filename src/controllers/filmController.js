@@ -56,10 +56,34 @@ let deleteFilm = async (req, res) => {
         })
     }
 }
+let getFilmByGenre = async (req, res) => {
+    try {
+        let data = await filmService.getFilmByGenre(req.query.genre);
+        return res.status(200).json(data)
+    } catch (error) {
+        return res.status(200).json({
+            errCode: 1,
+            errMessage: `error from server ${error}`
+        })
+    }
+}
+let getFilmBySearch = async (req, res) => {
+    try {
+        let data = await filmService.getFilmBySearch(req.query.search);
+        return res.status(200).json(data)
+    } catch (error) {
+        return res.status(200).json({
+            errCode: 1,
+            errMessage: `error from server ${error}`
+        })
+    }
+}
 module.exports = {
     saveFilm: saveFilm,
     getAllFilm: getAllFilm,
     getOneFilm: getOneFilm,
     editFilm:editFilm,
     deleteFilm:deleteFilm,
+    getFilmByGenre:getFilmByGenre,
+    getFilmBySearch:getFilmBySearch,
 }

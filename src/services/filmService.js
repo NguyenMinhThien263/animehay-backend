@@ -1,5 +1,8 @@
 import _ from 'lodash';
+// const { QueryTypes } = require('sequelize');
 import db, { sequelize } from '../models/index';
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 let saveFilm = (inputData) => {
     return new Promise(async (resolve, reject) => {
@@ -191,6 +194,47 @@ let getOneFilm = (inputId) => {
         }
     })
 }
+let getFilmByGenre = (inputGenre) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputGenre) {
+                resolve({
+                    errCode: 2,
+                    errMessage: 'Missing genre'
+                });
+            } else {
+                let film = await db.Allcodes.findOne({
+                    where: { keyMap: inputGenre },
+                    attributes: ['keyMap', 'value'],
+                    include: [
+                        {
+                            model: db.Films,
+                            as: 'filmsData',
+                            attributes: ['id', 'image', 'title', 'scrores', 'totalEpisode'],
+                            required: false,
+                            through: {
+                                model: db.Genries,
+                                as: 'genre',
+                                attributes: []
+                            }
+                        }
+                    ],
+                    raw: false,
+                    nest: true,
+                })
+                console.log(film);
+                if (film) {
+                    resolve({
+                        errCode: 0,
+                        film
+                    })
+                }
+            }
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
 let editFilm = (inputData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -287,10 +331,81 @@ let deleteFilm = (id) => {
         }
     })
 }
+let getFilmBySearch = (inputSearch) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputSearch) {
+                resolve({
+                    errCode: 2,
+                    errMessage: 'Missing search input'
+                });
+            } else {
+                let film = await db.Films.findAll({
+                    where: {
+                        [Op.or]: {
+                            title: {
+                                [Op.like]: `%${inputSearch}%`,
+                            },
+                            subTitle: {
+                                [Op.like]: `%${inputSearch}%`,
+                            }
+                        }
+                    },
+                    // attributes: {
+                    //     exclude: ['image'],
+                    // },
+                    include: [
+                        {
+                            model: db.Allcodes,
+                            as: 'genreData',
+                            required: false,
+                            attributes: ['keyMap', 'value'],
+                            through: {
+                                model: db.Genries,
+                                as: 'genre',
+                                attributes: []
+                            }
+                        },
+                        {
+                            model: db.Allcodes,
+                            as: 'statusData',
+                            // Pass in the Product attributes that you want to retrieve
+                            attributes: ['keyMap', 'value'],
+                        },
+                        {
+                            model: db.Allcodes,
+                            as: 'yearData',
+                            // Pass in the Product attributes that you want to retrieve
+                            attributes: ['keyMap', 'value'],
+                        },
+                    ],
+                    raw: false,
+                    nest: true,
+                })
+
+                if (film) {
+                    resolve({
+                        errCode: 0,
+                        data: film
+                    })
+                } else {
+                    resolve({
+                        errCode: 3,
+                        errMessage: 'Film not found'
+                    })
+                }
+            }
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
 module.exports = {
     saveFilm: saveFilm,
     getAllFilm: getAllFilm,
     getOneFilm: getOneFilm,
     editFilm: editFilm,
     deleteFilm: deleteFilm,
+    getFilmByGenre: getFilmByGenre,
+    getFilmBySearch: getFilmBySearch,
 }

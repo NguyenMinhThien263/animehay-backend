@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Allcodes.belongsToMany(models.Films, {
-        through: models.Genries, as:'genreData',
+        through: models.Genries, as:'filmsData',
          foreignKey: 'keyMap',
          otherKey:'filmId',
          sourceKey:'keyMap'

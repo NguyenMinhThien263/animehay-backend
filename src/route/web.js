@@ -15,6 +15,8 @@ let initWebRoutes = (app) => {
     router.delete('/api/delete-film', filmController.deleteFilm);
     router.get('/api/get-all-film', filmController.getAllFilm);
     router.get('/api/get-one-film', filmController.getOneFilm);
+    router.get('/api/get-film-by-genre', filmController.getFilmByGenre);
+    router.get('/api/get-film-by-search', filmController.getFilmBySearch);
     //user
     router.post('/api/add-new-user', userController.addNewUser);
     router.post('/api/get-user', userController.getUser);
