@@ -148,11 +148,11 @@ let getOneFilm = (inputId) => {
                     errMessage: 'Missing Id'
                 });
             } else {
-                let film = await db.Films.findOne({
+                let data = await db.Films.findOne({
                     where: { id: inputId },
-                    attributes: {
-                        exclude: ['image'],
-                    },
+                    // attributes: {
+                    //     // exclude: ['image'],
+                    // },
                     include: [
                         {
                             model: db.Allcodes,
@@ -181,54 +181,64 @@ let getOneFilm = (inputId) => {
                     raw: false,
                     nest: true,
                 })
-                console.log(film);
-                if (film) {
-                    resolve({
-                        errCode: 0,
-                        film
-                    })
+                if (data && data.image) {
+                    data.image = Buffer.from(data.image, 'base64').toString('binary');
                 }
+                if (!data) {
+                    data = {}
+                }
+                resolve({
+                    errCode: 0,
+                    data
+                })
             }
         } catch (error) {
             reject(error);
         }
     })
 }
-let getFilmByGenre = (inputGenre) => {
+let getFilmByGenre = (inputGenre, page, size) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const { limit, offset } = await getPagination(page, size);
             if (!inputGenre) {
                 resolve({
                     errCode: 2,
                     errMessage: 'Missing genre'
                 });
             } else {
-                let film = await db.Allcodes.findOne({
+                let films = await db.Allcodes.findAndCountAll({
                     where: { keyMap: inputGenre },
                     attributes: ['keyMap', 'value'],
                     include: [
                         {
                             model: db.Films,
                             as: 'filmsData',
-                            attributes: ['id', 'image', 'title', 'scrores', 'totalEpisode'],
+                            attributes: ['id',
+                                'image',
+                                'title', 'scrores', 'totalEpisode'],
                             required: false,
                             through: {
                                 model: db.Genries,
                                 as: 'genre',
                                 attributes: []
-                            }
+                            },
                         }
                     ],
+                    limit,
+                    offset,
+                    // distinct: true,
                     raw: false,
                     nest: true,
                 })
-                console.log(film);
-                if (film) {
-                    resolve({
-                        errCode: 0,
-                        film
-                    })
+                let data = {};
+                if (films && films.rows.length > 0) {
+                    data = getPagingData(films, page, limit)
                 }
+                resolve({
+                    errCode: 0,
+                    data
+                });
             }
         } catch (error) {
             reject(error);
